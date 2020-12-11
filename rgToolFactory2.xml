@@ -1,4 +1,4 @@
-<tool id="rgtf2" name="toolfactory" version="2.00" profile="16.04" >
+<tool id="rgtfd" name="toolfactory" version="2.00" profile="16.04" >
   <description>Scripts into tools v2.0</description>
   <macros>
      <xml name="tool_metadata">
@@ -146,7 +146,7 @@
    <requirement type="package" version="0.14.0">bioblend</requirement>
    <requirement type="package" version="0.10.6">ephemeris</requirement>
    <requirement type="package" version="4.4.0">docker-py</requirement>
-   <requirement type="package" version="0.72.0">planemo</requirement>
+   <container type="docker">quay.io/fubar2/planemo-biocontainer:latest</container>
 </requirements>
 
   <command ><![CDATA[

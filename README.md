@@ -1,6 +1,9 @@
 ﻿# Breaking news! Docker container at https://github.com/fubar2/toolfactory-galaxy-docker recommended as at December 2020
 
-## This ToolFactory is for non-docker use. There's a toolfactory_docker used in the new recommended Docker ToolFactory 
+## This ToolFactory is for docker use and is used in the new recommended Docker ToolFactory 
+
+## For non-Docker situations, use the ordinary ToolFactory  https://github.com/fubar2/toolfactory
+
 
 # WARNING
 
