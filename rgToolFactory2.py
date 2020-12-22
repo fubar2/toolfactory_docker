@@ -736,7 +736,7 @@ class ScriptRunner:
 
         """
 
-        def prun(container, tout, cl, user="biodocker"):
+        def prun(container, tout, cl, user="root"):
             rlog = container.exec_run(cl, user=user)
             slogl = str(rlog).split("\\n")
             slog = "\n".join(slogl)
