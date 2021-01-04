@@ -1,0 +1,67 @@
+name: Galaxy Tool Linting and Tests for PR
+# run planemo on a git repository containing a single tool
+# as a github action.
+# ross lazarus august 2020
+on: [pull_request,push]
+env:
+  GALAXY_REPO: https://github.com/galaxyproject/galaxy
+  GALAXY_RELEASE: release_20.05
+jobs:
+  setup:
+    name: setup environment and python
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: [3.7]
+    steps:
+    - name: Print github context properties
+      run: |
+        echo 'event: ${{ github.event_name }}'
+        echo 'sha: ${{ github.sha }}'
+        echo 'ref: ${{ github.ref }}'
+        echo 'head_ref: ${{ github.head_ref }}'
+        echo 'base_ref: ${{ github.base_ref }}'
+        echo 'event.before: ${{ github.event.before }}'
+        echo 'event.after: ${{ github.event.after }}'
+    - uses: actions/setup-python@v1
+      with:
+        python-version: ${{ matrix.python-version }}
+    - uses: actions/checkout@v2
+      with:
+    # planemo does not seem to want to install the requirement galaxyxml
+    # into the venv it manages at tool testing so do it the old skool way
+        repository: 'galaxyproject/galaxy'
+        path: 'galaxy'
+    - name: make venv ready for this galaxy and planemo
+      run:  |
+        python3 -m venv $GITHUB_WORKSPACE/galaxy/.venv
+        . $GITHUB_WORKSPACE/galaxy/.venv/bin/activate
+        pip install --upgrade pip
+        pip install wheel
+        pip install -r $GITHUB_WORKSPACE/galaxy/requirements.txt
+    - name: Upgrade pip
+      run: pip install --upgrade pip
+    # Install the `wheel` package so that when installing other packages which
+    # are not available as wheels, pip will build a wheel for them, which can be cached.
+    - name: Install wheel
+      run: pip install wheel
+    - name: Install Planemo and flake8
+      run: pip install planemo flake8 flake8-import-order
+    # galaxyxml temporarily removed until PR accepted
+    - uses: actions/checkout@v2
+      with:
+        fetch-depth: 1
+    - name: flake8 *.py
+      run: flake8 --ignore=E501,E203
+    - name: Planemo lint
+      run: planemo lint .
+    - name: Planemo test tool
+      run: planemo test --galaxy_root $GITHUB_WORKSPACE/galaxy --test_output tool_test_output.html --skip_venv --test_output_json tool_test_output.json --galaxy_python_version ${{ matrix.python-version }}  .
+    - name: Copy artifacts into place
+      run: |
+        mkdir upload
+        mv tool_test_output.json tool_test_output.html upload/
+    - uses: actions/upload-artifact@v2.0.1
+      with:
+        name: 'All tool test results'
+        path: upload
