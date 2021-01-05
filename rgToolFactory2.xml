@@ -10,8 +10,7 @@
             value="**What it Does**"
              help="Supply user documentation to appear on the new tool form as reStructured text - http://docutils.sourceforge.net/docs/ref/rst/restructuredtext.html" >
                 <sanitizer>
-                    <valid initial="string.printable">
-                    </valid>
+                    <valid initial="string.printable" />
                     <mapping initial="none"/>
                 </sanitizer>
             </param>
@@ -29,8 +28,7 @@
                         <param name="bibtex" label="BibTex" type="text" area="true"
                             help="Supply a BibTex entry that should be cited when this tool is used in published research." value="" >
                             <sanitizer>
-                                <valid initial="string.printable">
-                                </valid>
+                                <valid initial="string.printable" />
                                 <mapping initial="none"/>
                             </sanitizer>
                         </param>
@@ -53,14 +51,18 @@
             <param name="input_label" type="text" value="" label="This will become the user prompt for the form so please make it informative"
              help="Note that '~~~' is an internal delimiter so must not appear in this text field - please work around this technical limitation" >
             <sanitizer invalid_char="">
-              <valid initial="string.printable"> <remove value='~~~'/> </valid>
+              <valid initial="string.printable">
+                  <remove value='~~~' />
+              </valid>
               <mapping initial="none"/>
             </sanitizer>
             </param>
             <param name="input_help" type="text" value="" label="This will become help text on the form."
              help="Note that three consecutive ~ cannot be used in this text field - please work around this technical limitation">
             <sanitizer invalid_char="">
-              <valid initial="string.printable"> <remove value='~~~'/> </valid>
+              <valid initial="string.printable">
+                  <remove value='~~~' />
+              </valid>
               <mapping initial="none"/>
             </sanitizer>
             </param>
@@ -73,8 +75,9 @@
             <param name="history_name" type="text" label="Name for this output to appear in new history" optional="false"
               help="No spaces! Argparse will also use this name as --[name]">
               <sanitizer invalid_char="_">
-                <valid initial="string.letters,string.digits"/>
-                <add value="_" />
+                <valid initial="string.ascii_letters,string.digits" >
+                   <add value="_" />
+                </valid>
               </sanitizer>
             </param>
             <param name="history_format" type="select" multiple="false" label="Select the datatype for this output"
@@ -102,7 +105,7 @@
              help="See examples below to see how these can be parsed by scripts in the various languages">
           <param name="param_name" type="text" value="" label="Choose the name for this parameter - MUST not be blank!">
             <sanitizer invalid_char="">
-              <valid initial="string.letters,string.digits"/>
+              <valid initial="string.ascii_letters,string.digits"/>
               <mapping initial="none"/>
             </sanitizer>
           </param>
@@ -114,21 +117,27 @@
           <param name="param_value" type="text" value="" label="Enter this parameter's default value"
             help="Note that '~~~' is an internal delimiter must not appear in this text field - please work around this technical limitation" >
             <sanitizer invalid_char="">
-              <valid initial="string.printable"> <remove value='~~~'/> </valid>
+              <valid initial="string.printable">
+                  <remove value='~~~' />
+              </valid>
               <mapping initial="none"/>
             </sanitizer>
           </param>
           <param name="param_label" type="text" value="" label="Enter this parameter's label for the form"
              help="Note that '~~~' is an internal delimiter so must not appear in this text field - please work around this technical limitation" >
             <sanitizer invalid_char="">
-              <valid initial="string.printable"> <remove value='~~~'/> </valid>
+              <valid initial="string.printable">
+                  <remove value='~~~'/>
+              </valid>
               <mapping initial="none"/>
             </sanitizer>
           </param>
           <param name="param_help" type="text" value="" label="Help for this parameter"
              help="Note that three consecutive ~ cannot be used in this text field - please work around this technical limitation" >
             <sanitizer invalid_char="">
-              <valid initial="string.printable"> <remove value='~~~'/> </valid>
+              <valid initial="string.printable">
+                  <remove value='~~~'/>
+              </valid>
               <mapping initial="none"/>
             </sanitizer>
           </param>
@@ -267,7 +276,7 @@ $tool_name help goes here
             <param name="scriptrunner" type="text" value=""   label="Interpreter for the script - eg bash or python. Can be one of the dependencies named above or a system executable"
              help="Scripts are interpreted by the executable named here. Use bash for bash scripts, or a conda dependency such as R or Python for those scripts">
             <sanitizer invalid_char="">
-                <valid initial="string.letters,string.digits">
+                <valid initial="string.ascii_letters,string.digits">
                     <add value="_"/>
                 </valid>
             </sanitizer>
@@ -275,8 +284,7 @@ $tool_name help goes here
             <param name="dynScript" type="text" area="True" value="" label="Script for executable above to interpret. It can be one of the Conda dependency names "
              help="Script must handle all i/o and parameters as specified below using the parameters and passing method chosen below">
               <sanitizer>
-                 <valid initial="string.printable">
-                 </valid>
+                 <valid initial="string.printable"/>
                  <mapping initial="none"/>
               </sanitizer>
              </param>
@@ -319,16 +327,14 @@ $tool_name help goes here
             <param name="command_override" type="text" area="True" value="" label="Optional. Human wrought command element override XML/template - e.g. for bwa"
              help="For arbitrary and artfull command lines. All i/o and parameters must be passed. Leave blank unless needed. Not for the faint of heart">
               <sanitizer>
-                 <valid initial="string.printable">
-                 </valid>
+                 <valid initial="string.printable"/>
                  <mapping initial="none"/>
               </sanitizer>
              </param>
             <param name="test_override" type="text" area="True" value="" label="Optional. Human wrought test element override XML/template - e.g. for bwa"
              help="For arbitrary and artfull scripts. Leave blank unless needed. Not for the faint of heart">
               <sanitizer>
-                 <valid initial="string.printable">
-                 </valid>
+                 <valid initial="string.printable" />
                  <mapping initial="none"/>
               </sanitizer>
             </param>
@@ -360,32 +366,28 @@ $tool_name help goes here
             <param name="galaxy_url" type="text" value="http://localhost:8080" label="URL for the Galaxy server where the new tool should be installed"
              help="Default is localhost">
               <sanitizer>
-                 <valid initial="string.printable">
-                 </valid>
+                 <valid initial="string.printable" />
                  <mapping initial="none"/>
               </sanitizer>
             </param>
           <param name="galaxy_apikey" type="text" value="fakekey" label="API key for the Galaxy to install the new tool"
              help="Cut and paste from the admin user properties screen">
               <sanitizer>
-                 <valid initial="string.letters,string.digits">
-                 </valid>
+                 <valid initial="string.ascii_letters,string.digits" />
                  <mapping initial="none"/>
               </sanitizer>
             </param>
            <param name="toolshed_url" type="text" value="http://localhost:9009" label="URL for the Toolshed where the new tool should be installed"
              help="Default value is localhost:9009">
               <sanitizer>
-                 <valid initial="string.printable">
-                 </valid>
+                 <valid initial="string.printable" />
                  <mapping initial="none"/>
               </sanitizer>
             </param>
            <param name="toolshed_apikey" type="text" value="fakekey" label="API key for the local toolshed to use when installing the tool"
              help="Cut and paste from the admin user properties screen">
               <sanitizer>
-                 <valid initial="string.letters,string.digits">
-                 </valid>
+                 <valid initial="string.ascii_letters,string.digits" />
                  <mapping initial="none"/>
               </sanitizer>
             </param>
