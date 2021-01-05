@@ -19,13 +19,6 @@
 # calling venv. Hilarity ensues.
 
 
-# # expects tarball as first, html out as second parameter
-# cp $1 foo.tar.gz
-# tar -xvzf foo.tar.gz
-# TOOLNAME=`find . -name "*.xml"`
-# echo "*****TOOLNAME = $TOOLNAME"
-# planemo test  --test_output $2 $TOOLNAME
-
 import argparse
 import copy
 import logging
@@ -131,17 +124,6 @@ def html_escape(text):
 def cheetah_escape(text):
     """Produce entities within text."""
     return "".join([cheetah_escape_table.get(c, c) for c in text])
-
-
-def html_unescape(text):
-    """Revert entities within text. Multiple character targets so use replace"""
-    t = text.replace("&amp;", "&")
-    t = t.replace("&gt;", ">")
-    t = t.replace("&lt;", "<")
-    t = t.replace("\\$", "$")
-    t = t.replace("&#36;", "$")
-    t = t.replace("&#35;", "#")
-    return t
 
 
 def parse_citations(citations_text):
@@ -462,7 +444,6 @@ class ScriptRunner:
                     tp = gxtp.TestOutput(
                         name=newname,
                         value="%s_sample" % newname,
-                        format=newfmt,
                         compare=c,
                         lines_diff=ld,
                     )
@@ -479,7 +460,6 @@ class ScriptRunner:
                     tp = gxtp.TestOutput(
                         name=newname,
                         value="%s_sample" % newname,
-                        format=newfmt,
                         compare=c,
                         delta=delta,
                         delta_frac=delta_frac,
@@ -605,28 +585,31 @@ class ScriptRunner:
             self.newtool.command_override = self.command_override  # config file
         else:
             self.newtool.command_override = self.xmlcl
+        cite = gxtp.Citations()
+        acite = gxtp.Citation(type="doi", value="10.1093/bioinformatics/bts573")
+        cite.append(acite)
+        self.newtool.citations = cite
         if self.args.help_text:
             helptext = open(self.args.help_text, "r").readlines()
             safertext = "\n".join([cheetah_escape(x) for x in helptext])
-            if self.args.script_path:
-                scr = [x for x in self.spacedScript if x.strip() > ""]
-                scr.insert(0, "\n------\n\n\nScript::\n")
-                if len(scr) > 300:
-                    scr = (
-                        scr[:100]
-                        + ["    >300 lines - stuff deleted", "    ......"]
-                        + scr[-100:]
-                    )
-                scr.append("\n")
-                safertext = safertext + "\n".join(scr)
-            self.newtool.help = safertext
         else:
-            self.newtool.help = (
-                "Please ask the tool author (%s) for help \
-              as none was supplied at tool generation\n"
-                % (self.args.user_email)
-            )
-        self.newtool.version_command = None  # do not want
+            safertext =  "Please ask the tool author (%s) for help \
+          as none was supplied at tool generation\n" % (self.args.user_email)
+        if len(safertext) > 0:
+            safertext  = safertext + "\n\n------\n" # transition allowed!
+        if self.args.script_path:
+            scr = [x for x in self.spacedScript if x.strip() > ""]
+            scr.insert(0, "\n\nScript::\n")
+            if len(scr) > 300:
+                scr = (
+                    scr[:100]
+                    + ["    >300 lines - stuff deleted", "    ......"]
+                    + scr[-100:]
+                )
+            scr.append("\n")
+            safertext = safertext + "\n".join(scr)
+        self.newtool.help = safertext
+        self.newtool.version_command = f'echo {self.args.tool_version}'
         requirements = gxtp.Requirements()
         if self.args.packages:
             for d in self.args.packages.split(","):
@@ -640,7 +623,7 @@ class ScriptRunner:
                 requirements.append(
                     gxtp.Requirement("package", packg.strip(), ver.strip())
                 )
-        self.newtool.requirements = requirements
+            self.newtool.requirements = requirements
         if self.args.parampass == "0":
             self.doNoXMLparam()
         else:
@@ -664,9 +647,6 @@ class ScriptRunner:
             % (self.args.user_email, timenow())
         )
         self.newtool.add_comment("Source in git at: %s" % (toolFactoryURL))
-        self.newtool.add_comment(
-            "Cite: Creating re-usable tools from scripts doi:10.1093/bioinformatics/bts573"
-        )
         exml0 = self.newtool.export()
         exml = exml0.replace(FAKEEXE, "")  # temporary work around until PR accepted
         if (
@@ -682,6 +662,7 @@ class ScriptRunner:
         xf.write("\n")
         xf.close()
         # ready for the tarball
+
 
     def run(self):
         """
