@@ -571,7 +571,7 @@ class ScriptRunner:
             anout.positional = self.is_positional
             self.toutputs.append(anout)
             tp = gxtp.TestOutput(
-                name=newname, value="%s_sample" % newname, format=newfmt
+                name=newname, value="%s_sample" % newname,
             )
             self.testparam.append(tp)
 
@@ -612,7 +612,7 @@ class ScriptRunner:
             scr.append("\n")
             safertext = safertext + "\n".join(scr)
         self.newtool.help = safertext
-        self.newtool.version_command = f'echo {self.args.tool_version}'
+        self.newtool.version_command = f'echo "{self.args.tool_version}"'
         requirements = gxtp.Requirements()
         if self.args.packages:
             for d in self.args.packages.split(","):
